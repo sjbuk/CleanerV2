@@ -8,11 +8,15 @@
 #include <./lib/machine.H>
 #include <./config/pindefaults.h>
 
-config Machine::getConfig() { return _config; }
-void Machine::Action10SetSpinClockwise(){_spinSelectedDirection = clockwise;};
-void Machine::Action11SetSpinAntiClockwise(){_spinSelectedDirection = anticlockwise;};
-void Machine::Action12SetSpinBothwise(){_spinSelectedDirection = bothwise;};
+#pragma region PublicMethods
 
+void Machine::Action10SetSpinClockwise() { _spinSelectedDirection = clockwise; };
+void Machine::Action11SetSpinAntiClockwise() { _spinSelectedDirection = anticlockwise; };
+void Machine::Action12SetSpinBothwise() { _spinSelectedDirection = bothwise; };
+#pragma endregion
+
+#pragma region SetterGetters
+config Machine::getConfig() { return _config; }
 
 void Machine::setSpeeds(int Speed0, int Speed1, int Speed2, int Speed3)
 {
@@ -43,7 +47,9 @@ void Machine::setHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dr
     _config.horizontalFinalRinse = FinalRinse;
     _config.horizontalDryer = Dryer;
 }
+#pragma endregion
 
+#pragma region PrivateMethods
 void Machine::_initPins()
 {
     // Setup Pins
@@ -93,3 +99,5 @@ void Machine::_setDefaultConfig()
     _config.horizontalSpeed = 5000;
     _config.horizontalAccell = 5000;
 }
+
+#pragma endregion

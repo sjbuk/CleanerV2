@@ -27,7 +27,7 @@ public:
     void Action10SetSpinClockwise();
     void Action11SetSpinAntiClockwise();
     void Action12SetSpinBothwise();
-
+    //TODO:Complete Actions
     config getConfig();
     void setSpeeds (int Speed0, int Speed1, int Speed2, int Speed3);
     void setVerticalPositions (int Top, int Middle, int Bottom);
