@@ -4,40 +4,12 @@
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+#include <./lib/machine.h>
 
-#include "FastAccelStepper.h"
-FastAccelStepperEngine engine = FastAccelStepperEngine();
-FastAccelStepper *stepper = NULL;
+Machine *machine = NULL;
 
-const int pinSpinMotorEnable = 27;
-const int pinVerticalMotorEnable = 26;
-const int pinHorizontalMotorEnable = 33;
-
-const int pinTopLimitSwitch = 25;
-
-const int pinDirection = 13;
-const int pinStep = 32;
-const unsigned long deBounceMs = 250;
-unsigned long pressTimeTopLimitSwitch;
-unsigned long pressLastTimeTopLimitSwitch;
-void IRAM_ATTR TopLimit()
+void SetupOTA()
 {
-  pressTimeTopLimitSwitch = millis();
-  if (pressTimeTopLimitSwitch - pressLastTimeTopLimitSwitch > deBounceMs)
-  {
-    pressLastTimeTopLimitSwitch = pressTimeTopLimitSwitch;
-    stepper->forceStopAndNewPosition(0);
-    ets_printf("Int:",millis());
-  }
-}
-
-void setup()
-{
-  // put your setup code here, to run once:
-  esp_log_level_set("*", ESP_LOG_VERBOSE);
-  Serial.begin(115200);
-  log_i("Booting!!!");
-
   // Connect WIFI
   WiFi.mode(WIFI_STA);
   WiFi.setHostname("ESPWATCH");
@@ -76,46 +48,45 @@ void setup()
       else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
       else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
       else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+}
 
+void setup()
+{
+  // put your setup code here, to run once:
+  esp_log_level_set("*", ESP_LOG_VERBOSE);
+  Serial.begin(115200);
+  log_i("Booting!!!");
+
+  SetupOTA();
   ArduinoOTA.begin();
+  delay(50);
+  ArduinoOTA.handle();
 
-  // Setup Pins
-  pinMode(pinSpinMotorEnable, OUTPUT);
-  pinMode(pinVerticalMotorEnable, OUTPUT);
-  pinMode(pinHorizontalMotorEnable, OUTPUT);
-  pinMode(pinStep, OUTPUT);
-  pinMode(pinDirection, OUTPUT);
-  pinMode(pinTopLimitSwitch, INPUT_PULLUP);
+  machine = new Machine();
 
-  digitalWrite(pinSpinMotorEnable, LOW);
-  digitalWrite(pinVerticalMotorEnable, HIGH);
-  digitalWrite(pinHorizontalMotorEnable, HIGH);
-
-  engine.init();
-  stepper = engine.stepperConnectToPin(pinStep);
-  attachInterrupt(pinTopLimitSwitch, TopLimit, FALLING);
 }
 
 void loop()
 {
   ArduinoOTA.handle();
-  if (stepper)
-  {
-    stepper->setDirectionPin(pinDirection);
-    stepper->setEnablePin(pinSpinMotorEnable);
-    stepper->setAutoEnable(true);
+  machine->Action12SetSpinBothwise();
+  
+  delay(1000);
+  machine->Action31MoveVertToTop();
+  delay (1000);
+  machine->Action14SetSpinSpeedTo2();
+  machine->ActionSpin (15000);
+  delay (1000);
+  machine->Action32MoveVertToMid();
+  delay (1000);
+  machine->Action15SetSpinSpeedTo3();
+  machine->ActionSpin (15000);
+  delay (1000);
+  machine->Action33MoveVertToBottom();
+  delay (1000);
+  machine->Action16SetSpinSpeedTo4();
+  machine->ActionSpin (15000);
+  machine->Action32MoveVertToMid();
 
-    stepper->setSpeedInHz(20000);   // 500 steps/s
-    stepper->setAcceleration(5000); // 100 steps/s²
-    stepper->move(1000000);
-    while (stepper->isRunning())
-    {
-      delay(100);
-    }
-    stepper->move(-1000000);
-    while (stepper->isRunning())
-    {
-      delay(10);
-    }
-  }
+
 }
