@@ -1,12 +1,21 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+#include <string>
 
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <./lib/machine.h>
+#include <./lib/webhandler.h>
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
 
 Machine *machine = NULL;
+WebHandler *web = NULL;
 
 void SetupOTA()
 {
@@ -48,8 +57,20 @@ void SetupOTA()
       else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
       else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
       else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+  ArduinoOTA.begin();
 }
 
+void InitTime()
+{
+  String formattedDate;
+  timeClient.begin();
+  while (!timeClient.update())
+  {
+    timeClient.forceUpdate();
+  }
+  formattedDate = timeClient.getFormattedTime();
+  Serial.println(formattedDate);
+}
 void setup()
 {
   // put your setup code here, to run once:
@@ -58,35 +79,23 @@ void setup()
   log_i("Booting!!!");
 
   SetupOTA();
-  ArduinoOTA.begin();
-  delay(50);
-  ArduinoOTA.handle();
+  InitTime();
 
+  // Initialize SPIFFS
+  if (!SPIFFS.begin(true))
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  }
+
+  Serial.println("WEBHANDLER from Main.cpp");
   machine = new Machine();
-
+  web = new WebHandler(machine,&timeClient);
 }
 
 void loop()
 {
   ArduinoOTA.handle();
-  machine->Action12SetSpinBothwise();
-  
   delay(1000);
-  machine->Action31MoveVertToTop();
-  delay (1000);
-  machine->Action14SetSpinSpeedTo2();
-  machine->ActionSpin (15000);
-  delay (1000);
-  machine->Action32MoveVertToMid();
-  delay (1000);
-  machine->Action15SetSpinSpeedTo3();
-  machine->ActionSpin (15000);
-  delay (1000);
-  machine->Action33MoveVertToBottom();
-  delay (1000);
-  machine->Action16SetSpinSpeedTo4();
-  machine->ActionSpin (15000);
-  machine->Action32MoveVertToMid();
-
-
+  web->LogPage("LOW","Log Message");
 }

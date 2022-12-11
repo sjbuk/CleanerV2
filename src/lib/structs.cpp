@@ -9,6 +9,7 @@ struct config
     int verticalBottomPosition; // Step position of Bottom.
     int verticalSpeed;
     int verticalAccell;
+    unsigned long verticalLimitTimeoutMs = 30000;
 
     int horizontalWash;       // Step position of Wash Jar.
     int horizontalRinse;      // Step position Rinse Jar.

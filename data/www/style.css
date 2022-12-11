@@ -1,0 +1,54 @@
+html {
+    font-family: Helvetica;
+    display: inline-block;
+    margin: 0px auto;
+    text-align: center;
+  }
+  h1{
+    color: #0F3376;
+    padding: 2vh;
+  }
+  p{
+    font-size: 1.5rem;
+  }
+  .button {
+    display: inline-block;
+    background-color: #008CBA;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 16px 40px;
+    text-decoration: none;
+    font-size: 30px;
+    margin: 2px;
+    cursor: pointer;
+  }
+  .button2 {
+    background-color: #f44336;
+  }
+  #logtable{
+    margin-left: 100px;;
+    table-layout: fixed;
+    display: block;
+    width:80%;
+    
+
+
+  }
+  #logtablebody{
+    height: 80vh;
+    overflow: auto;
+    display: block;
+    
+  }
+  #logtablebody tr td:nth-child(1), #logtable tr th:nth-child(1){
+    min-width: 200px;
+  }
+  #logtablebody tr td:nth-child(2), #logtable tr th:nth-child(2){
+    min-width: 100px;
+  }
+  #logtablebody tr td:nth-child(3), #logtable tr th:nth-child(3){
+    width: 100%;
+    text-align: left;
+  }
+  

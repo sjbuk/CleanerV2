@@ -12,7 +12,6 @@
 
 Machine::Machine()
 {
-    Serial.println("Running constructor");
     _engine.init();
     _setDefaultConfig();
     Serial.println("Set Config");
@@ -20,8 +19,6 @@ Machine::Machine()
     _stepper = _engine.stepperConnectToPin(_config.pinStep);
 
     Serial.println("Move to home");
-    Action30MoveVertToHome();
-    Serial.println("Constructor Complete");
 }
 
 #pragma endregion
@@ -52,11 +49,18 @@ void Machine::Action30MoveVertToHome()
         delay(100);
     }
 
+    unsigned long startMs = millis();
+    bool timeout = false;
     _stepper->runBackward();
-    while (digitalRead(_config.pinTopLimitSwitch) == HIGH)
+    while (digitalRead(_config.pinTopLimitSwitch) == HIGH and timeout == false)
     {
+        if (millis() - startMs > _config.verticalLimitTimeoutMs){
+            timeout = true;
+            Serial.printf("Home timed out");
+        }
         delay(10);
     }
+
     _stepper->forceStopAndNewPosition(uint32_t(0));
     _verticalPoistion = 0;
 };
