@@ -3,7 +3,7 @@ console.log("JS RUNNING");
 const exampleSocket = new WebSocket("ws://10.111.1.211/log");
 
 exampleSocket.onmessage = (event) => {
-  console.log(event.data);
+  
   logObj = JSON.parse(event.data);
 
   var utcSeconds = logObj.timestamp;
@@ -12,9 +12,18 @@ exampleSocket.onmessage = (event) => {
   //Add row
   let tbl = document.getElementById("logtable").getElementsByTagName("tbody")[0];
   let newRow = tbl.insertRow();
-  newRow.classList.add(logObj.severity);
+  let filter = document.getElementById(logObj.severity.toLowerCase())
+  if (filter.checked ==false){
+    newRow.classList.add("hidden");
+  }
+  newRow.classList.add(logObj.severity.toLowerCase());
   newRow.insertCell().append(d.toLocaleDateString() + " " + d.toLocaleTimeString());
   newRow.insertCell().append(logObj.severity);
   newRow.insertCell().append(logObj.message);
   tbl.scrollTop = tbl.scrollHeight;
+}
+
+function updateFilter(ev){
+
+
 }

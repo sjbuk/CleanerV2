@@ -1,8 +1,4 @@
-#ifndef STRUCTS
-#define STRUCTS
 #include <./lib/structs.cpp>
-#endif
-
 #ifndef MACHINE_H
 #define MACHINE_H
 
@@ -11,49 +7,41 @@
 class Machine
 {
 private:
-    config _config;
-    directions _spinSelectedDirection = clockwise;
-    int _spinSelectedSpeed = 0;
-    int _spinSelectedSpindBothDuration = 0;
-    int _verticalPoistion = 0;
+    MACHINECONFIG _config;
+    MACHINESTATE _state;
+    SPINDIRECTION _spinSelectedDirection = SPINDIRECTION::clockwise;
     void _setDefaultConfig();
     bool _pause = false;
     bool _stop = true;
     bool _emergencyStop = false;
     void _initPins();
-    void _MoveVerticalToPosition (int Position);
-    void _SetActiveMotor (motor Motor);    
+    void ActionMoveVertToHome();
+    void _SetActiveMotor (MOTOR Motor);    
     FastAccelStepperEngine _engine = FastAccelStepperEngine();
     FastAccelStepper *_stepper = NULL;
 
 public:
     Machine();
-    void Action00EmergencyStop();
-    void Action05Initialise();
-    void Action10SetSpinClockwise();
-    void Action11SetSpinAntiClockwise();
-    void Action12SetSpinBothwise();
-    void Action13SetSpinSpeedTo1();
-    void Action14SetSpinSpeedTo2();
-    void Action15SetSpinSpeedTo3();
-    void Action16SetSpinSpeedTo4();
-    void Action17SetAltSpinDurationTo1();
-    void Action18SetAltSpinDurationTo2();
-    void Action19SetAltSpinDurationTo3();
-    void Action20SetAltSpinDurationTo4();
-    void Action30MoveVertToHome();
-    void Action31MoveVertToTop();
-    void Action32MoveVertToMid();
-    void Action33MoveVertToBottom();
+    void ActionEmergencyStop();
+    void ActionInitialise();
+    void ActionSetSpinDirection(SPINDIRECTION SpinDirection);
+    void ActionSetSpinSpeedRPM(int SpeedRPM);
+    void ActionSetAltSpinDurationMs(int DurationMs);
+    void ActionMoveVerticalTo(VERTICALPOSITION VerticalPosition);
     void ActionSpin(int Duration);
+    MACHINESTATE getState ();
 
     // TODO:Complete Actions
-    config getConfig();
-    void setSpeeds(int Speed0, int Speed1, int Speed2, int Speed3);
-    void setVerticalPositions(int Top, int Middle, int Bottom);
-    void setHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dryer);
+    MACHINECONFIG getConfig();
+    //Calibration VerticalPosition
+    void ConfigVerticalPositions(int Top, int Middle, int Bottom);
+    void ConfigHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dryer);
     void setSpinAccelleration(int Accelleration);
     int getSpinSpinAccelleration();
+    String GetMotorName (MOTOR motor);
+    String GetVerticalName (VERTICALPOSITION position);
+    String GetHorizontalName (HORIZONTALPOSITION position);
+
 };
 
 #endif

@@ -51,4 +51,20 @@ html {
     width: 100%;
     text-align: left;
   }
-  
+
+  .error{
+    visibility:visible;
+  }
+  .warn{
+    visibility:visible;
+  }
+  .info{
+    visibility:visible;
+  }
+  .verbose{
+    visibility:visible;
+  }
+
+  .hidden{
+    visibility:collapse;
+  }

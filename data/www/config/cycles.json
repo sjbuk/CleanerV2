@@ -1,0 +1,132 @@
+{
+  "washes": [
+    {
+      "cycle": "Full Clean",
+      "steps": [
+        {
+          "step": "Init",
+          "description":"Initialise",
+          "duration":60000,
+          "actions": [
+            1,
+            30,
+            40
+          ]
+        },
+        {
+          "step": "Wash",
+          "description":"Wash reverse spin 10 minutes",
+          "duration":540000,
+          "actions": [
+            41,
+            33,
+            12,
+            15,
+            360000,
+            2,
+            1,
+            32,
+            10,
+            16,
+            180000,
+            2,
+            1,
+            31
+          ]
+        },
+        {
+          "step": "Rinse",
+          "description":"Rinse reverse spin 10 minutes",
+          "duration":540000,
+          "actions": [
+            42,
+            33,
+            12,
+            15,
+            360000,
+            2,
+            1,
+            32,
+            10,
+            16,
+            180000,
+            2,
+            1,
+            31
+          ]
+        },
+        {
+          "step": "Final Rinse",
+          "description":"Final rinse 10 minutes",
+          "duration":540000,
+          "actions": [
+            43,
+            33,
+            12,
+            15,
+            360000,
+            2,
+            1,
+            32,
+            10,
+            16,
+            180000,
+            2,
+            1,
+            31
+          ]
+        },
+        {
+          "step": "Dry",
+          "description":"Dry 10 mins",
+          "duration":360000,
+          "actions": [
+            42,
+            33,
+            12,
+            15,
+            360000,
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "cycle": "Wash only",
+      "steps": [
+        {
+          "step": "Init",
+          "description":"Initialise",
+          "duration":60000,
+          "actions": [
+            1,
+            30,
+            40
+          ]
+        },
+        {
+          "step": "Wash",
+          "description":"Wash reverse spin 10 minutes",
+          "duration":540000,
+         "actions": [
+            41,
+            33,
+            12,
+            15,
+            3600,
+            2,
+            1,
+            32,
+            10,
+            16,
+            18000,
+            2,
+            1,
+            31
+          ]
+        }
+      ]
+    }
+  ]
+}

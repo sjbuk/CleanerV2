@@ -5,25 +5,47 @@
   <title>ESP32 Web Server</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <script src="ws.js"></script>
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <link rel="stylesheet" type="text/css" href="./css/pure-min.css">
+  <script src="./js/index.js"></script>
+
 </head>
 
 <body>
-  <h1>ESP32 Web Server Hello</h1>
-  <table id="logtable" class="logtable">
-    <thead>
-      <tr>
-        <th>Time Stamp</th>
-        <th>Severity</th>
-        <th>Message</th>
-      </tr>
-    </thead>
+  <div class="content">
+    <div class="header">
+      <h1>ESP32 Web Server INDEX</h1>
+    </div>
+  </div>
 
-    <tbody id="logtablebody">
-  
-    </tbody>
-  </table>
+  <div class="selection">
+    <form class="pure-form ">
+      <fieldset>
+          <legend>Wash Cycle</legend>
+          <label for="stacked-state">Wash Cycles</label>
+          <select id="washcycles" onchange="changeWashSelection()" >
+          </select>
+          <a  href="#" class="pure-button pure-button-primary" onclick="startWashSelection()">Start</a>
+      </fieldset>
+  </form>
+  </div>
+  <div class="logtable pure-table pure-table-horizontal">
+    <table id="washtable" class="washtable">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Duration</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="washtablebody">
+        <tr class="info"><td>13/12/2022 11:35:55</td><td>INFO</td><td>Log Info message </td></tr>
+
+      </tbody>
+    </table>
+  </div>
+
 </body>
 
 </html>

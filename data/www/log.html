@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ESP32 Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <link rel="stylesheet" type="text/css" href="./css/pure-min.css">
+  <script src="./js/log.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <h1>ESP32 Web Server Hello</h1>
+  </div>
+  <div class="content">
+    <div class="filter">
+      <input type="checkbox" id="error" name="error" checked onchange="updateFilter(event)">
+      <label for="error" class="pure-checkbox">Errors</label>
+
+      <input type="checkbox" id="warn" name="warn" checked onchange="updateFilter(event)">
+      <label for="warn" class="pure-checkbox">Warnings</label>
+
+      <input type="checkbox" id="info" name="info" checked onchange="updateFilter(event)">
+      <label for="info" class="pure-checkbox">Information</label>
+
+      <input type="checkbox" id="debug" name="debug" checked onchange="updateFilter(event)">
+      <label for="debug" class="pure-checkbox">Debug</label>
+
+      <input type="checkbox" id="verbose" name="verbose" onchange="updateFilter(event)">
+      <label for="verbose" class="pure-checkbox">Verbose</label>
+
+    </div>
+    <div class="logtable pure-table pure-table-horizontal">
+      <table id="logtable" class="logtable">
+        <thead>
+          <tr>
+            <th>Time Stamp</th>
+            <th>Severity</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+
+        <tbody id="logtablebody">
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

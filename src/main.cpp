@@ -3,12 +3,17 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <string>
+#include "esp_log.h"
 
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <./lib/machine.h>
 #include <./lib/webhandler.h>
+
+static const char *TAG = "CleanerV2";
+static char log_print_buffer[512];
+static char filePath[] = "/LOGS.txt";
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -60,6 +65,14 @@ void SetupOTA()
   ArduinoOTA.begin();
 }
 
+int redirectToSpiffs(const char *fmt, va_list args)
+{
+  // write evaluated format string into buffer
+  Serial.println("Redirected logger");
+  web->LogPage("WARN","Redirected");
+  return vprintf(fmt, args);
+}
+
 void InitTime()
 {
   String formattedDate;
@@ -75,8 +88,10 @@ void setup()
 {
   // put your setup code here, to run once:
   esp_log_level_set("*", ESP_LOG_VERBOSE);
+  esp_log_set_vprintf(redirectToSpiffs);
+
   Serial.begin(115200);
-  log_i("Booting!!!");
+  ESP_LOGI(TAG,"Booting!!!");
 
   SetupOTA();
   InitTime();
@@ -88,14 +103,28 @@ void setup()
     return;
   }
 
-  Serial.println("WEBHANDLER from Main.cpp");
+  ESP_LOGI(TAG, "WEBHANDLER from Main.cpp");
   machine = new Machine();
-  web = new WebHandler(machine,&timeClient);
+  web = new WebHandler(machine, &timeClient);
 }
 
 void loop()
 {
   ArduinoOTA.handle();
-  delay(1000);
-  web->LogPage("LOW","Log Message");
+  int I = 200;
+  ESP_LOGI(TAG,"Set Speed to 30 rpm");
+  machine->ActionSetSpinSpeedRPM(1000);
+  //  log_i("Move Home");
+  //machine->ActionMoveVerticalTo(VERTICALPOSITION::home);
+  ESP_LOGI(TAG,"Spin 1 Seconds");
+  machine->ActionSpin(I);
+  web->LogPage("WARN", "Hello %d",I);
+  machine->ActionSpin(I);
+  web->LogPage("ERROR", "Hello Error - %d",I);
+  machine->ActionSpin(I);
+  web->LogPage("VERBOSE", "Hello Verbose");
+  machine->ActionSpin(I);
+  web->LogPage("INFO", "Hello Info");
+  machine->ActionSpin(I);
+  web->LogPage("DEBUG", "Hello DEBUG");
 }

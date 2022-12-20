@@ -1,9 +1,6 @@
 #include <Arduino.h>
 
-#ifndef STRUCTS
-#define STRUCTS
 #include <./lib/structs.cpp>
-#endif
 
 #include <./lib/machine.H>
 #include <./config/pindefaults.h>
@@ -25,14 +22,17 @@ Machine::Machine()
 
 #pragma region PublicMethods
 
-void Machine::Action05Initialise()
+void Machine::ActionInitialise()
 {
-    Action30MoveVertToHome();
+    ActionMoveVertToHome();
 };
 
-void Machine::Action30MoveVertToHome()
+/// @brief /////////////////////
+// Move vertical to home home position via limit switch.
+////////////////////////////////
+void Machine::ActionMoveVertToHome()
 {
-    _SetActiveMotor(motor::vertical);
+    _SetActiveMotor(MOTOR::vertical);
     _stepper->setSpeedInHz(3000);
     _stepper->setAcceleration(50000);
 
@@ -54,51 +54,41 @@ void Machine::Action30MoveVertToHome()
     _stepper->runBackward();
     while (digitalRead(_config.pinTopLimitSwitch) == HIGH and timeout == false)
     {
-        if (millis() - startMs > _config.verticalLimitTimeoutMs){
+        if (millis() - startMs > _config.verticalLimitTimeoutMs)
+        {
             timeout = true;
             Serial.printf("Home timed out");
         }
         delay(10);
     }
 
-    _stepper->forceStopAndNewPosition(uint32_t(0));
-    _verticalPoistion = 0;
+    _stepper->forceStopAndNewPosition(0);
+    _state.verticalPosition = VERTICALPOSITION::home;
 };
 
-void Machine::Action10SetSpinClockwise() { _spinSelectedDirection = clockwise; };
-void Machine::Action11SetSpinAntiClockwise() { _spinSelectedDirection = anticlockwise; };
-void Machine::Action12SetSpinBothwise() { _spinSelectedDirection = bothwise; };
-void Machine::Action13SetSpinSpeedTo1() { _spinSelectedSpeed = _config.spinSpeeds[0]; };
-void Machine::Action14SetSpinSpeedTo2() { _spinSelectedSpeed = _config.spinSpeeds[1]; };
-void Machine::Action15SetSpinSpeedTo3() { _spinSelectedSpeed = _config.spinSpeeds[2]; };
-void Machine::Action16SetSpinSpeedTo4() { _spinSelectedSpeed = _config.spinSpeeds[3]; };
-void Machine::Action17SetAltSpinDurationTo1() { _spinSelectedSpindBothDuration = _config.spinSpinReverseTime[0]; };
-void Machine::Action18SetAltSpinDurationTo2() { _spinSelectedSpindBothDuration = _config.spinSpinReverseTime[1]; };
-void Machine::Action19SetAltSpinDurationTo3() { _spinSelectedSpindBothDuration = _config.spinSpinReverseTime[2]; };
-void Machine::Action20SetAltSpinDurationTo4() { _spinSelectedSpindBothDuration = _config.spinSpinReverseTime[3]; };
-void Machine::Action31MoveVertToTop() { _MoveVerticalToPosition(_config.verticalTopPosition); };
-void Machine::Action32MoveVertToMid() { _MoveVerticalToPosition(_config.verticalMidPosition); };
-void Machine::Action33MoveVertToBottom() { _MoveVerticalToPosition(_config.verticalBottomPosition); };
+void Machine::ActionSetSpinDirection(SPINDIRECTION SpinDirection) { _state.spinDirectiom = SpinDirection; };
+void Machine::ActionSetSpinSpeedRPM(int SpinSpeedRPM) { _state.spinSpeedRPM = SpinSpeedRPM; };
+void Machine::ActionSetAltSpinDurationMs(int DurationMs) { _state.spinReverseTimeMs = DurationMs; };
 void Machine::ActionSpin(int Duration)
 {
-    _SetActiveMotor(motor::spin);
-    _stepper->setSpeedInHz(_spinSelectedSpeed);
+    _SetActiveMotor(MOTOR::spin);
+    _stepper->setSpeedInHz(_state.spinSpeedRPM * _config.RPMtoStepsRatio);
     _stepper->setAcceleration(_config.spinAccell);
     int start = millis();
     while (millis() - start <= Duration)
     {
         switch (_spinSelectedDirection)
         {
-        case bothwise:
+        case SPINDIRECTION::bothwise:
             _stepper->runForward();
-            delay(_spinSelectedSpindBothDuration);
+            delay(_state.spinReverseTimeMs);
             _stepper->runBackward();
-            delay(_spinSelectedSpindBothDuration);
+            delay(_state.spinReverseTimeMs);
             break;
-        case clockwise:
+        case SPINDIRECTION::clockwise:
             _stepper->runForward();
             delay(Duration);
-        case anticlockwise:
+        case SPINDIRECTION::anticlockwise:
             _stepper->runBackward();
             delay(Duration);
 
@@ -109,27 +99,96 @@ void Machine::ActionSpin(int Duration)
     _stepper->stopMove();
     while (_stepper->isRunning())
     {
-        delay (50);
+        delay(50);
     }
-
-    
 };
 
 #pragma endregion
 
 #pragma region SetterGetters
-config Machine::getConfig()
+MACHINESTATE Machine::getState()
+{
+    return _state;
+}
+
+MACHINECONFIG Machine::getConfig()
 {
     return _config;
 }
 
-void Machine::setSpeeds(int Speed0, int Speed1, int Speed2, int Speed3)
+String Machine::GetMotorName(MOTOR motor)
 {
-    _config.spinSpeeds[0] = Speed0; // In Hz
-    _config.spinSpeeds[1] = Speed1;
-    _config.spinSpeeds[2] = Speed2;
-    _config.spinSpeeds[3] = Speed3;
-}
+    // Text name of motor
+    switch (motor)
+    {
+    case MOTOR::none:
+        return "None";
+        break;
+    case MOTOR::spin:
+        return "Spin";
+        break;
+    case MOTOR::horizontal:
+        return "Horizontal";
+        break;
+    case MOTOR::vertical:
+        return "Vertical";
+        break;
+    default:
+        return "Unknown";
+        break;
+    }
+};
+String Machine::GetVerticalName(VERTICALPOSITION position){
+  switch (position)
+  {
+  case VERTICALPOSITION::home:
+    return "Home";
+    break;
+  case VERTICALPOSITION::middle:
+    return "Middle";
+    break;
+  case VERTICALPOSITION::bottom:
+    return "Bottom";
+    break;
+  case VERTICALPOSITION::top:
+    return "Top";
+    break;
+  case VERTICALPOSITION::unknown:
+    return "Unknown";
+    break;
+  default:
+    return "Error";
+    break;
+  }
+
+};
+String Machine::GetHorizontalName(HORIZONTALPOSITION position){
+      switch (position)
+  {
+  case HORIZONTALPOSITION::home:
+    return "Home";
+    break;
+  case HORIZONTALPOSITION::wash:
+    return "Wash";
+    break;
+  case HORIZONTALPOSITION::rinse:
+    return "Rinse";
+    break;
+  case HORIZONTALPOSITION::finalRinse:
+    return "Final Rinse";
+    break;
+  case HORIZONTALPOSITION::dryer:
+    return "Dryer";
+    break;
+  case HORIZONTALPOSITION::unknown:
+    return "Unknown";
+    break;
+  default:
+    return "Error";
+    break;
+  }
+
+};
 
 void Machine::setSpinAccelleration(int Accelleration)
 {
@@ -139,41 +198,56 @@ int Machine::getSpinSpinAccelleration()
 {
     return _config.spinAccell;
 }
-void Machine::setVerticalPositions(int Top, int Middle, int Bottom)
+
+///////////////////////////////////////
+// Configure the positions for vertical
+//////////////
+void Machine::ConfigVerticalPositions(int Top, int Middle, int Bottom)
 {
-    _config.verticalTopPosition = Top;
-    _config.verticalMidPosition = Middle;
-    _config.verticalBottomPosition = Bottom;
+    _config.verticalTopStepValue = Top;
+    _config.verticalMidStepValue = Middle;
+    _config.verticalBottomStepValue = Bottom;
 }
-void Machine::setHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dryer)
+void Machine::ConfigHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dryer)
 {
-    _config.horizontalWash = Wash;
-    _config.horizontalRinse = Rinse;
-    _config.horizontalFinalRinse = FinalRinse;
-    _config.horizontalDryer = Dryer;
+    _config.horizontalWashStepValue = Wash;
+    _config.horizontalRinseStepValue = Rinse;
+    _config.horizontalFinalRinseStepValue = FinalRinse;
+    _config.horizontalDryerStepValue = Dryer;
 }
 #pragma endregion
 
 #pragma region PrivateMethods
 
-void Machine::_SetActiveMotor(motor Motor)
+void Machine::_SetActiveMotor(MOTOR Motor)
 {
+    // Stop current motor if moving
+    // TODO: Will cause current position to be incorrect.
     _stepper->stopMove();
-    while (_stepper->isRunning()){delay(50);}
+    while (_stepper->isRunning())
+    {
+        delay(50);
+    }
     switch (Motor)
     {
-    case spin:
+    case MOTOR::spin:
         _stepper->setDirectionPin(_config.pinDirection);
         _stepper->setEnablePin(_config.pinMotorSpinEnable);
+        _stepper->setCurrentPosition(0);
+        _state.selectedMotor = Motor;
+
         break;
-    case vertical:
+    case MOTOR::vertical:
         _stepper->setDirectionPin(_config.pinDirection, false);
         _stepper->setEnablePin(_config.pinMotorVerticalEnable);
-        _stepper->setCurrentPosition (_verticalPoistion);
+        _stepper->setCurrentPosition(_state.verticalCurrentStep);
+        _state.selectedMotor = Motor;
         break;
-    case horizontal:
+    case MOTOR::horizontal:
         _stepper->setDirectionPin(_config.pinDirection, false);
         _stepper->setEnablePin(_config.pinMotorHorzontalEnable);
+        _state.selectedMotor = Motor;
+        _stepper->setCurrentPosition(_state.horizontalCurrentStep);
         break;
 
     default:
@@ -182,24 +256,43 @@ void Machine::_SetActiveMotor(motor Motor)
     _stepper->setAutoEnable(true);
 };
 
-void Machine::_MoveVerticalToPosition(int Position)
+void Machine::ActionMoveVerticalTo(VERTICALPOSITION VerticalPosition)
 {
-    _SetActiveMotor(motor::vertical);
-    Serial.print ("Destination:");
-    Serial.println (Position);
-    Serial.print ("Current Position:");
-    Serial.println (_stepper->getCurrentPosition());
+    int Position;
+    _SetActiveMotor(MOTOR::vertical);
+
+    _state.verticalTargetPosition = VerticalPosition;
     _stepper->setAcceleration(_config.verticalAccell);
-    _stepper->setSpeedInHz(_config.horizontalSpeed);
+    _stepper->setSpeedInHz(_state.spinSpeedRPM * _config.RPMtoStepsRatio);
+
+    if (VerticalPosition == VERTICALPOSITION::home || _state.verticalPosition == VERTICALPOSITION::unknown)
+    {
+        ActionMoveVertToHome();
+    }
+
+    switch (VerticalPosition)
+    {
+    case VERTICALPOSITION::top:
+        Position = _config.verticalTopStepValue;
+        break;
+    case VERTICALPOSITION::middle:
+        Position = _config.verticalMidStepValue;
+        break;
+    case VERTICALPOSITION::bottom:
+        Position = _config.verticalBottomStepValue;
+        break;
+    default:
+        break;
+    }
+
     _stepper->moveTo(Position);
     while (_stepper->isRunning())
     {
         delay(50);
     }
-    _verticalPoistion = _stepper->getCurrentPosition();
-    Serial.print ("Final Position:");
-    Serial.println (Position);
-
+    _state.verticalPosition = VerticalPosition;
+    Serial.print("Final Position:");
+    Serial.println(Position);
 };
 
 void Machine::_initPins()
@@ -227,29 +320,19 @@ void Machine::_setDefaultConfig()
     _config.pinDryer = pinDryer;
     _config.pin24vOn = pin24v;
 
-    _config.spinSpeeds[0] = 10000; // In Hz
-    _config.spinSpeeds[1] = 20000;
-    _config.spinSpeeds[2] = 30000;
-    _config.spinSpeeds[3] = 40000;
-    _spinSelectedSpeed = _config.spinSpeeds[0];
     _config.spinAccell = 3000; // In Hz/s/s
+    _config.RPMtoStepsRatio = 27;
 
-    _config.spinSpinReverseTime[0] = 10000; // In ms
-    _config.spinSpinReverseTime[1] = 30000;
-    _config.spinSpinReverseTime[2] = 60000;
-    _config.spinSpinReverseTime[3] = 90000;
-    _spinSelectedSpindBothDuration = _config.spinSpinReverseTime[0];
-
-    _config.verticalTopPosition = 2000;
-    _config.verticalMidPosition = 20000;
-    _config.verticalBottomPosition = 40000;
+    _config.verticalTopStepValue = 2000;
+    _config.verticalMidStepValue = 20000;
+    _config.verticalBottomStepValue = 40000;
     _config.verticalSpeed = 8000;
     _config.verticalAccell = 8000;
 
-    _config.horizontalWash = 0;
-    _config.horizontalRinse = 0;
-    _config.horizontalFinalRinse = 0;
-    _config.horizontalDryer = 0;
+    _config.horizontalWashStepValue = 0;
+    _config.horizontalRinseStepValue = 0;
+    _config.horizontalFinalRinseStepValue = 0;
+    _config.horizontalDryerStepValue = 0;
     _config.horizontalSpeed = 5000;
     _config.horizontalAccell = 5000;
 }
