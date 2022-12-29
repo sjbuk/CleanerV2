@@ -2,6 +2,7 @@
 #define WEBHANDLER_H
 
 #include <ArduinoJson.h>
+#include "AsyncJson.h"
 #include <./lib/machine.h>
 #include <./lib/structs.cpp>
 #include "ESPAsyncWebServer.h"
@@ -18,16 +19,17 @@ class WebHandler
 {
 private:
     StaticJsonDocument<250> _stateJson(MACHINESTATE state);
-    Machine *_machine;
     AsyncWebServer *_webserver;
     NTPClient *_ntpTimeClient;
     void _WebServerRoutes();
     static void _onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
     static void _processWsMessage(uint8_t *data);
+    static void handleCommand  (AsyncWebServerRequest * request, JsonVariant &json);
 
 public:
     //    WebHandler(Machine *machine);
     WebHandler(Machine *machine, NTPClient *ntpTimeClient);
+    Machine *_machine;
     void LogPage(String Severity, const char *format, ...);
 };
 

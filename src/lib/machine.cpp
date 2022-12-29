@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+#include "esp_log.h"
 #include <./lib/structs.cpp>
 
 #include <./lib/machine.H>
@@ -13,14 +13,32 @@ Machine::Machine()
     _setDefaultConfig();
     Serial.println("Set Config");
     _initPins();
-    _stepper = _engine.stepperConnectToPin(_config.pinStep);
+    xTaskCreate(&Machine::_ActionProcessor,"Action Processor",4096,this,10,NULL);
 
-    Serial.println("Move to home");
 }
 
 #pragma endregion
 
 #pragma region PublicMethods
+void Machine::_ActionProcessor(void *pvParameter)
+{
+    Machine* machine = reinterpret_cast<Machine*>(pvParameter);
+    struct msgCommand msg;
+    for (;;)
+    {
+         if (qCommands !=0){
+             if (xQueueReceive(qCommands, &msg,(TickType_t)10)){
+                 ESP_LOGI ("Async Action","Command: %d, Value: %d",msg.action,msg.value);
+             };
+         };
+        vTaskDelay(100);
+    };
+}
+
+    void ActionProcessor(msgCommand Command){
+        xQueueSend(qCommands,&Command,10);
+    }
+
 
 void Machine::ActionInitialise()
 {
@@ -138,56 +156,56 @@ String Machine::GetMotorName(MOTOR motor)
         break;
     }
 };
-String Machine::GetVerticalName(VERTICALPOSITION position){
-  switch (position)
-  {
-  case VERTICALPOSITION::home:
-    return "Home";
-    break;
-  case VERTICALPOSITION::middle:
-    return "Middle";
-    break;
-  case VERTICALPOSITION::bottom:
-    return "Bottom";
-    break;
-  case VERTICALPOSITION::top:
-    return "Top";
-    break;
-  case VERTICALPOSITION::unknown:
-    return "Unknown";
-    break;
-  default:
-    return "Error";
-    break;
-  }
-
+String Machine::GetVerticalName(VERTICALPOSITION position)
+{
+    switch (position)
+    {
+    case VERTICALPOSITION::home:
+        return "Home";
+        break;
+    case VERTICALPOSITION::middle:
+        return "Middle";
+        break;
+    case VERTICALPOSITION::bottom:
+        return "Bottom";
+        break;
+    case VERTICALPOSITION::top:
+        return "Top";
+        break;
+    case VERTICALPOSITION::unknown:
+        return "Unknown";
+        break;
+    default:
+        return "Error";
+        break;
+    }
 };
-String Machine::GetHorizontalName(HORIZONTALPOSITION position){
-      switch (position)
-  {
-  case HORIZONTALPOSITION::home:
-    return "Home";
-    break;
-  case HORIZONTALPOSITION::wash:
-    return "Wash";
-    break;
-  case HORIZONTALPOSITION::rinse:
-    return "Rinse";
-    break;
-  case HORIZONTALPOSITION::finalRinse:
-    return "Final Rinse";
-    break;
-  case HORIZONTALPOSITION::dryer:
-    return "Dryer";
-    break;
-  case HORIZONTALPOSITION::unknown:
-    return "Unknown";
-    break;
-  default:
-    return "Error";
-    break;
-  }
-
+String Machine::GetHorizontalName(HORIZONTALPOSITION position)
+{
+    switch (position)
+    {
+    case HORIZONTALPOSITION::home:
+        return "Home";
+        break;
+    case HORIZONTALPOSITION::wash:
+        return "Wash";
+        break;
+    case HORIZONTALPOSITION::rinse:
+        return "Rinse";
+        break;
+    case HORIZONTALPOSITION::finalRinse:
+        return "Final Rinse";
+        break;
+    case HORIZONTALPOSITION::dryer:
+        return "Dryer";
+        break;
+    case HORIZONTALPOSITION::unknown:
+        return "Unknown";
+        break;
+    default:
+        return "Error";
+        break;
+    }
 };
 
 void Machine::setSpinAccelleration(int Accelleration)

@@ -1,0 +1,446 @@
+{
+    "washes": [
+        {
+            "wash": "Full Clean",
+            "stages": [
+                {
+                    "stage": "precycle",
+                    "actions": [
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "stage": "wash",
+                    "actions": [
+                        {
+                            "actionName": "StartHorizontalMotor",
+                            "action": 7,
+                            "valueName": "Wash",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "bottom",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "bothwise",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 60
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "middle",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "top",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "stage": "rinse",
+                    "actions": [
+                        {
+                            "actionName": "StartHorizontalMotor",
+                            "action": 7,
+                            "valueName": "Rinse",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "bottom",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "bothwise",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 60
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "middle",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "top",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "stage": "finalrinse",
+                    "actions": [
+                        {
+                            "actionName": "StartHorizontalMotor",
+                            "action": 7,
+                            "valueName": "Rinse",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "bottom",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "bothwise",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 60
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "middle",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "DryerOn",
+                            "action": 10,
+                            "valueName": "",
+                            "value": 0
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "top",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "stage": "dry",
+                    "actions": [
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 20
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "wash": "Quick Clean",
+            "stages": [
+                {
+                    "stage": "precycle",
+                    "actions": [
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "stage": "wash",
+                    "actions": [
+                        {
+                            "actionName": "StartHorizontalMotor",
+                            "action": 7,
+                            "valueName": "Wash",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "bottom",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "bothwise",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 60
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "middle",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "top",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "stage": "finalrinse",
+                    "actions": [
+                        {
+                            "actionName": "StartHorizontalMotor",
+                            "action": 7,
+                            "valueName": "Rinse",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "bottom",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "bothwise",
+                            "value": 3
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 60
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "middle",
+                            "value": 2
+                        },
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "DryerOn",
+                            "action": 10,
+                            "valueName": "",
+                            "value": 0
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "StartVerticalMotor",
+                            "action": 6,
+                            "valueName": "top",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "stage": "dry",
+                    "actions": [
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 20
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "wash": "Dry Only",
+            "stages": [
+                {
+                    "stage": "precycle",
+                    "actions": [
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "stage": "dry",
+                    "actions": [
+                        {
+                            "actionName": "SetSpinDirection",
+                            "action": 8,
+                            "valueName": "clockwise",
+                            "value": 1
+                        },
+                        {
+                            "actionName": "SetSpinSpeedRPM",
+                            "action": 9,
+                            "valueName": "",
+                            "value": 20
+                        },
+                        {
+                            "actionName": "StartSpinMotor",
+                            "action": 5,
+                            "valueName": "",
+                            "value": 60000
+                        },
+                        {
+                            "actionName": "Initialise",
+                            "action": 14,
+                            "valueName": "",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

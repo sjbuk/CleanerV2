@@ -4,6 +4,7 @@
 
 #include "FastAccelStepper.h"
 
+extern QueueHandle_t qCommands, qEvents;
 class Machine
 {
 private:
@@ -15,13 +16,16 @@ private:
     bool _stop = true;
     bool _emergencyStop = false;
     void _initPins();
+    static void _ActionProcessor(void *pvParameter);
     void ActionMoveVertToHome();
     void _SetActiveMotor (MOTOR Motor);    
     FastAccelStepperEngine _engine = FastAccelStepperEngine();
     FastAccelStepper *_stepper = NULL;
+    TaskHandle_t _taskActionProcessor = NULL;
 
 public:
     Machine();
+    void ActionProcessor(msgCommand Command);
     void ActionEmergencyStop();
     void ActionInitialise();
     void ActionSetSpinDirection(SPINDIRECTION SpinDirection);

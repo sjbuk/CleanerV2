@@ -5,6 +5,21 @@
 // {
 //    // AsyncWebServer _server(80);
 // };
+void WebHandler::handleCommand(AsyncWebServerRequest *request, JsonVariant &json)
+{
+  ESP_LOGI("Web", "Message received from WEB");
+  JsonObject doc = json.as<JsonObject>();
+  JsonArray arr = doc["actions"].as<JsonArray>();
+  msgCommand command;
+  for (JsonVariant value : arr)
+  {
+    command.action = (ACTIONS)value["action"].as<int>();
+    command.value = value["value"].as<int>();
+    xQueueSend(qCommands,&command,10);
+  }
+
+  request->send(200, "text/plain", "{\"result\" :\"OK\"}");
+};
 
 WebHandler::WebHandler(Machine *machine, NTPClient *ntpTimeClient)
 {
@@ -27,12 +42,17 @@ void WebHandler::_WebServerRoutes()
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Methods", "GET,PUT,POST");
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers", "*");
 
+  // Add handlers
+  AsyncCallbackJsonWebHandler *commandHandler = new AsyncCallbackJsonWebHandler("/api/command", handleCommand);
+  _webserver->addHandler(commandHandler);
+
   // Route for static content
   _webserver->serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
 
   // Route to return settings values
   _webserver->on("/api/state", HTTP_GET, [this](AsyncWebServerRequest *request)
                  {
+                   ESP_LOGI("Web","api/state called");
                    AsyncResponseStream *response = request->beginResponseStream("application/json");
                    serializeJson( _stateJson(_machine->getState()), *response);
                    request->send(response); });

@@ -14,6 +14,7 @@
 static const char *TAG = "CleanerV2";
 static char log_print_buffer[512];
 static char filePath[] = "/LOGS.txt";
+QueueHandle_t qCommands, qEvents;
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -69,7 +70,7 @@ int redirectToSpiffs(const char *fmt, va_list args)
 {
   // write evaluated format string into buffer
   Serial.println("Redirected logger");
-  web->LogPage("WARN","Redirected");
+  web->LogPage("WARN", "Redirected");
   return vprintf(fmt, args);
 }
 
@@ -88,10 +89,16 @@ void setup()
 {
   // put your setup code here, to run once:
   esp_log_level_set("*", ESP_LOG_VERBOSE);
-  esp_log_set_vprintf(redirectToSpiffs);
 
   Serial.begin(115200);
-  ESP_LOGI(TAG,"Booting!!!");
+  ESP_LOGI(TAG, "Booting!!!");
+  
+  //Create Queues
+  qCommands = xQueueCreate(30, sizeof(struct msgCommand));
+    if(qCommands == NULL){
+    Serial.println("Error creating the queue");
+  }
+  qEvents = xQueueCreate(10,sizeof(EVENTS));
 
   SetupOTA();
   InitTime();
@@ -103,28 +110,18 @@ void setup()
     return;
   }
 
-  ESP_LOGI(TAG, "WEBHANDLER from Main.cpp");
   machine = new Machine();
   web = new WebHandler(machine, &timeClient);
+  web->LogPage("INFO", "Startup Complete");
+
+  //TEST
+  struct msgCommand x;
+  x.action = ACTIONS::StartSpinMotor;
+  x.value = 100;
+  xQueueSend(qCommands,&x, ( TickType_t )10);
 }
 
 void loop()
 {
   ArduinoOTA.handle();
-  int I = 200;
-  ESP_LOGI(TAG,"Set Speed to 30 rpm");
-  machine->ActionSetSpinSpeedRPM(1000);
-  //  log_i("Move Home");
-  //machine->ActionMoveVerticalTo(VERTICALPOSITION::home);
-  ESP_LOGI(TAG,"Spin 1 Seconds");
-  machine->ActionSpin(I);
-  web->LogPage("WARN", "Hello %d",I);
-  machine->ActionSpin(I);
-  web->LogPage("ERROR", "Hello Error - %d",I);
-  machine->ActionSpin(I);
-  web->LogPage("VERBOSE", "Hello Verbose");
-  machine->ActionSpin(I);
-  web->LogPage("INFO", "Hello Info");
-  machine->ActionSpin(I);
-  web->LogPage("DEBUG", "Hello DEBUG");
 }
