@@ -20,7 +20,6 @@ QueueHandle_t qCommands, qEvents;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
-Machine *machine = NULL;
 WebHandler *web = NULL;
 
 void SetupOTA()
@@ -90,9 +89,7 @@ void setup()
   // put your setup code here, to run once:
   esp_log_level_set("*", ESP_LOG_VERBOSE);
 
-  Serial.begin(115200);
-  ESP_LOGI(TAG, "Booting!!!");
-  
+
   //Create Queues
   qCommands = xQueueCreate(30, sizeof(struct msgCommand));
     if(qCommands == NULL){
@@ -100,6 +97,7 @@ void setup()
   }
   qEvents = xQueueCreate(10,sizeof(EVENTS));
 
+  MachineStart();
   SetupOTA();
   InitTime();
 
@@ -110,8 +108,7 @@ void setup()
     return;
   }
 
-  machine = new Machine();
-  web = new WebHandler(machine, &timeClient);
+  web = new WebHandler(&timeClient);
   web->LogPage("INFO", "Startup Complete");
 
   //TEST

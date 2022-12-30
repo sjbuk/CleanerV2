@@ -28,8 +28,7 @@ private:
 
 public:
     //    WebHandler(Machine *machine);
-    WebHandler(Machine *machine, NTPClient *ntpTimeClient);
-    Machine *_machine;
+    WebHandler(NTPClient *ntpTimeClient);
     void LogPage(String Severity, const char *format, ...);
 };
 

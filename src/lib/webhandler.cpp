@@ -21,13 +21,12 @@ void WebHandler::handleCommand(AsyncWebServerRequest *request, JsonVariant &json
   request->send(200, "text/plain", "{\"result\" :\"OK\"}");
 };
 
-WebHandler::WebHandler(Machine *machine, NTPClient *ntpTimeClient)
+WebHandler::WebHandler(NTPClient *ntpTimeClient)
 {
   Serial.println("Web handler Constructor");
   _webserver = new AsyncWebServer(80);
   _websocketserver = new AsyncWebSocket("/log");
   _WebServerRoutes();
-  _machine = machine;
   _ntpTimeClient = ntpTimeClient;
 };
 
@@ -54,7 +53,7 @@ void WebHandler::_WebServerRoutes()
                  {
                    ESP_LOGI("Web","api/state called");
                    AsyncResponseStream *response = request->beginResponseStream("application/json");
-                   serializeJson( _stateJson(_machine->getState()), *response);
+                   serializeJson( _stateJson(getState()), *response);
                    request->send(response); });
 
   // 404 Handler
@@ -115,20 +114,20 @@ StaticJsonDocument<250> WebHandler::_stateJson(MACHINESTATE state)
 {
   StaticJsonDocument<250> json;
   json["motor"]["selected"] = (int)state.selectedMotor;
-  json["motor"]["selectedName"] = _machine->GetMotorName(state.selectedMotor);
+  json["motor"]["selectedName"] = GetMotorName(state.selectedMotor);
   json["motor"]["Running"] = (int)state.motorRunning ? "true" : "false";
 
   json["vertical"]["Position"] = (int)state.verticalPosition;
-  json["vertical"]["Name"] = _machine->GetVerticalName(state.verticalPosition);
+  json["vertical"]["Name"] = GetVerticalName(state.verticalPosition);
   json["vertical"]["TargetPosition"] = (int)state.verticalTargetPosition;
-  json["vertical"]["TargetName"] = _machine->GetVerticalName(state.verticalTargetPosition);
+  json["vertical"]["TargetName"] = GetVerticalName(state.verticalTargetPosition);
   json["vertical"]["CurrentStep"] = (int)state.verticalCurrentStep;
 
   json["horizontal"]["CurrentStep"] = (int)state.horizontalCurrentStep;
   json["horizontal"]["Position"] = (int)state.horizontalPosition;
-  json["horizontal"]["Name"] = _machine->GetHorizontalName(state.horizontalPosition);
+  json["horizontal"]["Name"] = GetHorizontalName(state.horizontalPosition);
   json["horizontal"]["TargetPosition"] = (int)state.horizontalTargetPosition;
-  json["horizontal"]["Name"] = _machine->GetHorizontalName(state.horizontalTargetPosition);
+  json["horizontal"]["Name"] = GetHorizontalName(state.horizontalTargetPosition);
   json["horizontal"]["CurrentStep"] = (int)state.horizontalCurrentStep;
 
   return json;

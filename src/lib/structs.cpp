@@ -15,7 +15,8 @@ enum class MOTOR
     horizontal = 3
 };
 
-enum class HORIZONTALPOSITION{
+enum class HORIZONTALPOSITION
+{
     unknown = -1,
     home = 0,
     wash = 1,
@@ -31,25 +32,29 @@ enum class VERTICALPOSITION
     middle = 2,
     bottom = 3
 };
-enum class ACTIONS{
-    EmergencyStop = 0,              //No value
-    StopMotors = 1,                 //No value
-    Pause = 2,                      //No value need Continue to restart
-    Continue = 3,                   //No Value
-    Clear = 4,                      //No Value
-    StartSpinMotor = 5,             //Vale = duration in ms
-    StartVerticalMotor = 6,         //Value = Destination VERTICALPOSITION
-    StartHorizontalMotor = 7,       //Value = Destination HORIZONTALPOSITION
-    SetSpinDirection = 8,           //Value = SPINDIRECTION
-    SetSpinSpeedRPM = 9,            //Value = RPM
-    DryerOn = 10,                   //Value = Duration in MS
-    DryerOff = 11,                  //NoValue
-    VerticalStep = 12,              //Vaue +- Steps to move.
-    HoricontalStep = 13,             //Vaue +- Steps to move.
-    Initialise = 14
+enum class ACTIONS
+{
+    EmergencyStop = 0,        // No value
+    StopMotors = 1,           // No value
+    Pause = 2,                // No value need Continue to restart
+    Continue = 3,             // No Value
+    Clear = 4,                // No Value
+    StartSpinMotor = 5,       // Vale = duration in ms
+    StartVerticalMotor = 6,   // Value = Destination VERTICALPOSITION
+    StartHorizontalMotor = 7, // Value = Destination HORIZONTALPOSITION
+    SetSpinDirection = 8,     // Value = SPINDIRECTION
+    SetSpinSpeedRPM = 9,      // Value = RPM
+    DryerOn = 10,             // Value = Duration in MS
+    DryerOff = 11,            // NoValue
+    VerticalStep = 12,        // Vaue +- Steps to move.
+    HoricontalStep = 13,      // Vaue +- Steps to move.
+    Initialise = 14,
+    RunWash = 15,     // Value is id of wash routine
+    RunWashStage = 16 // Value Wash ID * 1000 + StepID
 };
 
-struct LOGFILTER{
+struct LOGFILTER
+{
     bool Errors = true;
     bool Warnings = true;
     bool Information = true;
@@ -57,15 +62,16 @@ struct LOGFILTER{
     bool Verbose = false;
 };
 
-enum EVENTS{
+enum EVENTS
+{
     StateUpdated = 1
 };
 
-struct msgCommand{
+struct msgCommand
+{
     ACTIONS action;
     int value;
 };
-
 
 struct MACHINESTATE
 {
@@ -78,12 +84,13 @@ struct MACHINESTATE
     HORIZONTALPOSITION horizontalTargetPosition = HORIZONTALPOSITION::unknown;
     int horizontalCurrentStep;
 
-    int spinSpeedRPM;          // spinSpeeds[0] default
+    int spinSpeedRPM;      // spinSpeeds[0] default
     int spinReverseTimeMs; // If Spin both directions then how long in ms for each direction
     SPINDIRECTION spinDirectiom;
-
+    bool _pause = false;
+    bool _stop = true;
+    bool _emergencyStop = false;
 };
-
 
 struct MACHINECONFIG
 {
