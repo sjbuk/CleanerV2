@@ -3,7 +3,6 @@
 #include <./lib/structs.cpp>
 
 #include <./lib/machine.H>
-#include <./config/pindefaults.h>
 
 #pragma region Constructors
 
@@ -21,10 +20,11 @@ TaskHandle_t _taskActionProcessor = NULL;
 void MachineStart()
 {
     _setDefaultConfig();
+    _initPins();
     _engine.init();
+    ESP_LOGI("Machine","Step Pin:%d",_config.pinStep);
     _stepper = _engine.stepperConnectToPin(_config.pinStep);
     Serial.println("Set Config");
-    _initPins();
     xTaskCreate(_ActionProcessor,"Action Processor",4096,NULL,10,NULL);
 
 }
@@ -73,11 +73,10 @@ void ActionMoveVertToHome()
     ESP_LOGI("Machine","Running VertToHome");
     _SetActiveMotor(MOTOR::vertical);
     _stepper->setSpeedInHz(3000);
-    _stepper->setAcceleration(50000);
+    _stepper->setAcceleration(3000);
 
     // If Top Limit is already pressed move down
-    Serial.print("TopLimit:");
-    Serial.println(digitalRead(_config.pinTopLimitSwitch));
+    ESP_LOGI("Machine","TopLimit:%d",digitalRead(_config.pinTopLimitSwitch));
     if (digitalRead(_config.pinTopLimitSwitch) == LOW)
     {
         _stepper->move(200);
@@ -96,7 +95,7 @@ void ActionMoveVertToHome()
         if (millis() - startMs > _config.verticalLimitTimeoutMs)
         {
             timeout = true;
-            Serial.printf("Home timed out");
+            ESP_LOGE("Machine","Home timed out");
         }
         delay(10);
     }
@@ -349,15 +348,15 @@ void _initPins()
 }
 void _setDefaultConfig()
 {
-    _config.pinStep = pinStep;
-    _config.pinDirection = pinDirection;
-    _config.pinMotorSpinEnable = pinSpinMotorEnable;
-    _config.pinMotorVerticalEnable = pinVerticalMotorEnable;
-    _config.pinMotorHorzontalEnable = pinHorizontalMotorEnable;
-    _config.pinTopLimitSwitch = pinTopLimitSwitch;
-    _config.pinLeftLimitSwitch = pinLeftLimitSwitch;
-    _config.pinDryer = pinDryer;
-    _config.pin24vOn = pin24v;
+    _config.pinStep = 32;
+    _config.pinDirection = 13; //need to chand
+    _config.pinMotorSpinEnable = 27;
+    _config.pinMotorVerticalEnable = 26;
+    _config.pinMotorHorzontalEnable = 33;
+    _config.pinTopLimitSwitch = 25;
+    _config.pinLeftLimitSwitch = 12; //need to chand
+    _config.pinDryer = 14; //need to chand
+    _config.pin24vOn = 35;
 
     _config.spinAccell = 3000; // In Hz/s/s
     _config.RPMtoStepsRatio = 27;
@@ -367,6 +366,7 @@ void _setDefaultConfig()
     _config.verticalBottomStepValue = 40000;
     _config.verticalSpeed = 8000;
     _config.verticalAccell = 8000;
+    _config.verticalLimitTimeoutMs=30000;
 
     _config.horizontalWashStepValue = 0;
     _config.horizontalRinseStepValue = 0;
