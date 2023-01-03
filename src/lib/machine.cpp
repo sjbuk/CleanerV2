@@ -45,6 +45,12 @@ void _ActionProcessor(void *pvParameter)
                  case ACTIONS::Initialise:
                     ActionInitialise();
                     break;
+                 case ACTIONS::VerticalMoveByStep:
+                    ActionMoveByStep(MOTOR::vertical,msg.value);
+                    break;
+                 case ACTIONS::HoricontalMoveByStep:
+                    ActionMoveByStep(MOTOR::horizontal,msg.value);
+                    break;
                  
                  default:
                     break;
@@ -104,6 +110,12 @@ void ActionMoveVertToHome()
     _state.verticalPosition = VERTICALPOSITION::home;
 };
 
+void ActionMoveByStep(MOTOR Motor, int Steps){
+    ESP_LOGI("Machine","Move by: %d",Steps);
+    _SetActiveMotor(Motor);
+    _stepper->move(Steps,true);
+
+}
 void ActionSetSpinDirection(SPINDIRECTION SpinDirection) { _state.spinDirectiom = SpinDirection; };
 void ActionSetSpinSpeedRPM(int SpinSpeedRPM) { _state.spinSpeedRPM = SpinSpeedRPM; };
 void ActionSetAltSpinDurationMs(int DurationMs) { _state.spinReverseTimeMs = DurationMs; };
@@ -279,12 +291,16 @@ void _SetActiveMotor(MOTOR Motor)
         _stepper->setDirectionPin(_config.pinDirection, false);
         _stepper->setEnablePin(_config.pinMotorVerticalEnable);
         _stepper->setCurrentPosition(_state.verticalCurrentStep);
+        _stepper->setSpeedInHz(_config.verticalSpeed);
+        _stepper->setAcceleration(_config.verticalAccell);
         _state.selectedMotor = Motor;
         break;
     case MOTOR::horizontal:
         _stepper->setDirectionPin(_config.pinDirection, false);
         _stepper->setEnablePin(_config.pinMotorHorzontalEnable);
         _state.selectedMotor = Motor;
+        _stepper->setSpeedInHz(_config.horizontalSpeed);
+        _stepper->setAcceleration(_config.horizontalAccell);
         _stepper->setCurrentPosition(_state.horizontalCurrentStep);
         break;
 

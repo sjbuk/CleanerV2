@@ -46,8 +46,8 @@ enum class ACTIONS
     SetSpinSpeedRPM = 9,      // Value = RPM
     DryerOn = 10,             // Value = Duration in MS
     DryerOff = 11,            // NoValue
-    VerticalStep = 12,        // Vaue +- Steps to move.
-    HoricontalStep = 13,      // Vaue +- Steps to move.
+    VerticalMoveByStep = 12,        // Vaue +- Steps to move.
+    HoricontalMoveByStep = 13,      // Vaue +- Steps to move.
     Initialise = 14,
     RunWash = 15,     // Value is id of wash routine
     RunWashStage = 16 // Value Wash ID * 1000 + StepID

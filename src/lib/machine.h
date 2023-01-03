@@ -20,6 +20,7 @@ void ActionSetSpinSpeedRPM(int SpeedRPM);
 void ActionSetAltSpinDurationMs(int DurationMs);
 void ActionMoveVerticalTo(VERTICALPOSITION VerticalPosition);
 void ActionSpin(int Duration);
+void ActionMoveByStep(MOTOR Motor, int Steps);
 MACHINESTATE getState();
 
 // TODO:Complete Actions
