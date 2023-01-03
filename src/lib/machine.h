@@ -21,6 +21,8 @@ void ActionSetAltSpinDurationMs(int DurationMs);
 void ActionMoveVerticalTo(VERTICALPOSITION VerticalPosition);
 void ActionSpin(int Duration);
 void ActionMoveByStep(MOTOR Motor, int Steps);
+void SaveCurrentMotorCurrentStep();
+
 MACHINESTATE getState();
 
 // TODO:Complete Actions

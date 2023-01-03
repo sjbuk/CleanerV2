@@ -108,13 +108,14 @@ void ActionMoveVertToHome()
 
     _stepper->forceStopAndNewPosition(0);
     _state.verticalPosition = VERTICALPOSITION::home;
+    _state.verticalTargetPosition = VERTICALPOSITION::home;
 };
 
 void ActionMoveByStep(MOTOR Motor, int Steps){
     ESP_LOGI("Machine","Move by: %d",Steps);
     _SetActiveMotor(Motor);
     _stepper->move(Steps,true);
-
+    SaveCurrentMotorCurrentStep();
 }
 void ActionSetSpinDirection(SPINDIRECTION SpinDirection) { _state.spinDirectiom = SpinDirection; };
 void ActionSetSpinSpeedRPM(int SpinSpeedRPM) { _state.spinSpeedRPM = SpinSpeedRPM; };
@@ -269,15 +270,36 @@ void ConfigHorizontalPositions(int Wash, int Rinse, int FinalRinse, int Dryer)
 
 #pragma region PrivateMethods
 
+void SaveCurrentMotorCurrentStep(){
+        //Save position of current Motor
+    switch (_state.selectedMotor)
+    {
+    case MOTOR::horizontal:
+        ESP_LOGI("Machine","Set H Position: %d",_stepper->getCurrentPosition());
+        _state.horizontalCurrentStep = _stepper->getCurrentPosition();
+        break;
+    case MOTOR::vertical:
+        ESP_LOGI("Machine","Set V Position: %d",_stepper->getCurrentPosition());
+        _state.verticalCurrentStep = _stepper->getCurrentPosition();
+        break;
+    default:
+        break;
+    }
+}
+
 void _SetActiveMotor(MOTOR Motor)
 {
     // Stop current motor if moving
     // TODO: Will cause current position to be incorrect.
     _stepper->stopMove();
+    
     while (_stepper->isRunning())
     {
         delay(50);
     }
+    SaveCurrentMotorCurrentStep();
+
+
     switch (Motor)
     {
     case MOTOR::spin:
