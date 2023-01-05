@@ -10,11 +10,13 @@
 #include <ArduinoOTA.h>
 #include <./lib/machine.h>
 #include <./lib/webhandler.h>
+#include <Preferences.h>
 
 static const char *TAG = "CleanerV2";
 static char log_print_buffer[512];
 static char filePath[] = "/LOGS.txt";
 QueueHandle_t qCommands, qEvents;
+Preferences preferences;
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -88,7 +90,7 @@ void setup()
 {
   // put your setup code here, to run once:
   esp_log_level_set("*", ESP_LOG_VERBOSE);
-
+  
 
   //Create Queues
   qCommands = xQueueCreate(30, sizeof(struct msgCommand));
@@ -96,7 +98,8 @@ void setup()
     Serial.println("Error creating the queue");
   }
   qEvents = xQueueCreate(10,sizeof(EVENTS));
-
+  
+  preferences.begin("machine",false);
   MachineStart();
   SetupOTA();
   InitTime();

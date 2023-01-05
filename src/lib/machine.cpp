@@ -51,7 +51,8 @@ void _ActionProcessor(void *pvParameter)
                  case ACTIONS::HoricontalMoveByStep:
                     ActionMoveByStep(MOTOR::horizontal,msg.value);
                     break;
-                 
+                 case ACTIONS::ResetConfig:
+                    preferences.clear();
                  default:
                     break;
                  }
@@ -77,6 +78,7 @@ void ActionInitialise()
 void ActionMoveVertToHome()
 {
     ESP_LOGI("Machine","Running VertToHome");
+    _state.busy = true;
     _SetActiveMotor(MOTOR::vertical);
     _stepper->setSpeedInHz(3000);
     _stepper->setAcceleration(3000);
@@ -109,13 +111,16 @@ void ActionMoveVertToHome()
     _stepper->forceStopAndNewPosition(0);
     _state.verticalPosition = VERTICALPOSITION::home;
     _state.verticalTargetPosition = VERTICALPOSITION::home;
+    _state.busy = false;
 };
 
 void ActionMoveByStep(MOTOR Motor, int Steps){
     ESP_LOGI("Machine","Move by: %d",Steps);
+    _state.busy = true;
     _SetActiveMotor(Motor);
     _stepper->move(Steps,true);
     SaveCurrentMotorCurrentStep();
+    _state.busy = false;
 }
 void ActionSetSpinDirection(SPINDIRECTION SpinDirection) { _state.spinDirectiom = SpinDirection; };
 void ActionSetSpinSpeedRPM(int SpinSpeedRPM) { _state.spinSpeedRPM = SpinSpeedRPM; };
@@ -386,32 +391,33 @@ void _initPins()
 }
 void _setDefaultConfig()
 {
-    _config.pinStep = 32;
-    _config.pinDirection = 13; //need to chand
-    _config.pinMotorSpinEnable = 27;
-    _config.pinMotorVerticalEnable = 26;
-    _config.pinMotorHorzontalEnable = 33;
-    _config.pinTopLimitSwitch = 25;
-    _config.pinLeftLimitSwitch = 12; //need to chand
-    _config.pinDryer = 14; //need to chand
-    _config.pin24vOn = 35;
 
-    _config.spinAccell = 3000; // In Hz/s/s
-    _config.RPMtoStepsRatio = 27;
+    _config.pinStep = preferences.getInt("pinStep", 32);
+    _config.pinDirection = preferences.getInt("pinDirection", 13); //need to chand
+    _config.pinMotorSpinEnable = preferences.getInt("pinMotorSpinEnable", 27);
+    _config.pinMotorVerticalEnable =preferences.getInt("pinMotorVerticalEnable", 26);
+    _config.pinMotorHorzontalEnable = preferences.getInt("pinMotorHorzontalEnable", 33);
+    _config.pinTopLimitSwitch = preferences.getInt("pinTopLimitSwitch", 25);
+    _config.pinLeftLimitSwitch = preferences.getInt("pinLeftLimitSwitch", 12); //need to chand
+    _config.pinDryer = preferences.getInt("pinDryer", 14); //need to chand
+    _config.pin24vOn = preferences.getInt("pin24vOn", 35);
 
-    _config.verticalTopStepValue = 2000;
-    _config.verticalMidStepValue = 20000;
-    _config.verticalBottomStepValue = 40000;
-    _config.verticalSpeed = 8000;
-    _config.verticalAccell = 8000;
-    _config.verticalLimitTimeoutMs=30000;
+    _config.spinAccell = preferences.getInt("spinAccell", 3000); // In Hz/s/s
+    _config.RPMtoStepsRatio = preferences.getInt("RPMtoStepsRatio", 27);
 
-    _config.horizontalWashStepValue = 0;
-    _config.horizontalRinseStepValue = 0;
-    _config.horizontalFinalRinseStepValue = 0;
-    _config.horizontalDryerStepValue = 0;
-    _config.horizontalSpeed = 5000;
-    _config.horizontalAccell = 5000;
+    _config.verticalTopStepValue = preferences.getInt("verticalTopStepValue",2000);
+    _config.verticalMidStepValue = preferences.getInt("verticalMidStepValue",20000);
+    _config.verticalBottomStepValue = preferences.getInt("verticalBottomStepValue",40000);
+    _config.verticalSpeed = preferences.getInt("verticalSpeed",8000);
+    _config.verticalAccell = preferences.getInt("verticalAccell",8000);
+    _config.verticalLimitTimeoutMs=preferences.getInt("verticalLimitTimeoutMs",30000);
+
+    _config.horizontalWashStepValue = preferences.getInt("horizontalWashStepValue",0);
+    _config.horizontalRinseStepValue = preferences.getInt("horizontalRinseStepValue",0);
+    _config.horizontalFinalRinseStepValue = preferences.getInt("horizontalFinalRinseStepValue",0);
+    _config.horizontalDryerStepValue = preferences.getInt("horizontalDryerStepValue",0);
+    _config.horizontalSpeed = preferences.getInt("horizontalSpeed",5000);
+    _config.horizontalAccell = preferences.getInt("horizontalAccell",5000);
 }
 
 #pragma endregion

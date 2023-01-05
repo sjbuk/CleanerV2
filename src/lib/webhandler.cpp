@@ -115,7 +115,7 @@ StaticJsonDocument<250> WebHandler::_stateJson(MACHINESTATE state)
   StaticJsonDocument<250> json;
   json["motor"]["selected"] = (int)state.selectedMotor;
   json["motor"]["selectedName"] = GetMotorName(state.selectedMotor);
-  json["motor"]["Running"] = (int)state.motorRunning ? "true" : "false";
+  json["motor"]["Running"] = (int)state.busy ? "true" : "false";
 
   json["vertical"]["Position"] = (int)state.verticalPosition;
   json["vertical"]["Name"] = GetVerticalName(state.verticalPosition);

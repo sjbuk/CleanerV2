@@ -3,9 +3,10 @@
 #define MACHINE_H
 
 #include "FastAccelStepper.h"
+#include <Preferences.h>
 
 extern QueueHandle_t qCommands, qEvents;
-
+extern Preferences preferences;
 void _setDefaultConfig();
 void _initPins();
 void _ActionProcessor(void *pvParameter);
