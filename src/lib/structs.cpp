@@ -50,7 +50,10 @@ enum class ACTIONS
     HoricontalMoveByStep = 13,      // Vaue +- Steps to move.
     Initialise = 14,
     RunWash = 15,     // Value is id of wash routine
-    RunWashStage = 16 // Value Wash ID * 1000 + StepID
+    RunWashStage = 16, // Value Wash ID * 1000 + StepID
+    SaveVerticalPosition = 17, //Value is position (Top Mid Bottom) uses current position 
+    SaveHorizontalPosition = 18, //Value is position (Wash Rinse Final Dry) uses current position 
+    ResetConfig = 19
 };
 
 struct LOGFILTER
@@ -76,7 +79,7 @@ struct msgCommand
 struct MACHINESTATE
 {
     MOTOR selectedMotor = MOTOR::none;
-    bool motorRunning = false;
+    bool busy = false;
     VERTICALPOSITION verticalPosition = VERTICALPOSITION::unknown;
     VERTICALPOSITION verticalTargetPosition = VERTICALPOSITION::unknown;
     int verticalCurrentStep;
@@ -87,9 +90,9 @@ struct MACHINESTATE
     int spinSpeedRPM;      // spinSpeeds[0] default
     int spinReverseTimeMs; // If Spin both directions then how long in ms for each direction
     SPINDIRECTION spinDirectiom;
-    bool _pause = false;
-    bool _stop = true;
-    bool _emergencyStop = false;
+    bool pause = false;
+    bool stop = true;
+    bool emergencyStop = false;
 };
 
 struct MACHINECONFIG
